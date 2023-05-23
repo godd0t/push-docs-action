@@ -1,0 +1,50 @@
+name: 'Push Docs'
+description: 'Push docs to godd0t/docs repository'
+inputs:
+  target_repository:
+    description: 'Target repository'
+    required: true
+    default: 'godd0t/docs'
+  pat_token:
+    description: 'Personal Access Token'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v3
+
+    - name: Copy docs to godd0t/docs
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ inputs.target_repository }}
+        token: ${{ inputs.pat_token }}
+        path: docs_repo
+        ref: main
+
+    - name: Create repo subdirectory
+      run: |
+        REPO_SUBDIR="projects/${{ github.repository }}"
+        mkdir -p "docs_repo/docs/$REPO_SUBDIR"
+      shell: bash
+
+    - name: Move docs
+      run: |
+        REPO_SUBDIR="projects/${{ github.repository }}"
+        cp -r docs/* "docs_repo/docs/$REPO_SUBDIR/"
+      shell: bash
+
+    - name: Update index.md
+      run: |
+        REPO_SUBDIR="projects/${{ github.repository }}/index.md"
+        echo "- [${{ github.repository }}]($REPO_SUBDIR)" >> docs_repo/docs/index.md
+      shell: bash
+
+    - name: Commit and push
+      run: |
+        cd docs_repo
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Update docs for ${{ github.repository }}" -a
+        git push origin main
+      shell: bash
