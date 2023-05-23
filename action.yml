@@ -13,6 +13,10 @@ runs:
   steps:
     - uses: actions/checkout@v3
 
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      id: setup-python-docs-action
+
     - name: Copy docs to godd0t/docs
       uses: actions/checkout@v3
       with:
@@ -45,6 +49,8 @@ runs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add .
-        git commit -m "Update docs for ${{ github.repository }}" -a
+        SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
+        git commit -m "Update docs for ${{ github.repository }} with commit SHA: $SHORT_SHA"
         git push origin main
       shell: bash
+
