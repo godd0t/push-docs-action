@@ -11,24 +11,7 @@ runs:
   using: 'composite'
   steps:
     - uses: actions/checkout@v3
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      id: setup-python
-      with:
-        python-version: "3.11"
-        cache: "pip"
-        cache-dependency-path: pyproject.toml
-    - uses: actions/cache@v3
-      id: docs-cache
-      with:
-        path: ${{ env.pythonLocation }}
-        key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-docs
-    - name: Install dependencies
-      if: steps.docs-cache.outputs.cache-hit != 'true'
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e .[docs]
-      shell: bash
+
     - name: Copy docs to docs_repo
       uses: actions/checkout@v3
       with:
@@ -40,19 +23,18 @@ runs:
     - name: Create repo subdirectory
       run: |
         REPO_SUBDIR="projects/${{ github.repository }}"
-        mkdir -p "docs_repo/docs/$REPO_SUBDIR/docs/"
+        mkdir -p "docs_repo/docs/$REPO_SUBDIR"
       shell: bash
 
     - name: Move docs
       run: |
         REPO_SUBDIR="projects/${{ github.repository }}"
-        cp -r docs/* "docs_repo/docs/$REPO_SUBDIR/docs/"
-        cp -r mkdocs.yml "docs_repo/docs/$REPO_SUBDIR/"
+        cp -r docs/* "docs_repo/docs/$REPO_SUBDIR/"
       shell: bash
 
     - name: Update index.md
       run: |
-        REPO_SUBDIR="projects/${{ github.repository }}/site"
+        REPO_SUBDIR="projects/${{ github.repository }}/index.md"
         echo "- [${{ github.repository }}]($REPO_SUBDIR)" >> docs_repo/docs/index.md
       shell: bash
 
@@ -62,21 +44,6 @@ runs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add .
-        REPO_SUBDIR="docs/projects/${{ github.repository }}/mkdocs.yml"
-        git commit -m "$REPO_SUBDIR" -a
+        git commit -m "Update docs for ${{ github.repository }}" -a
         git push origin main
-      shell: bash
-    - name: Build Docs
-      run: |
-          cd docs_repo
-          REPO_SUBDIR="docs/projects/${{ github.repository }}/mkdocs.yml"
-          mkdocs gh-deploy --force -m "$SHORT_SHA" -f "$REPO_SUBDIR"
-      shell: bash
-    - name: Push Tag
-      run: |
-        cd docs_repo
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git tag docs-updated-${{ github.run_id }}
-        git push origin docs-updated-${{ github.run_id }}
       shell: bash
