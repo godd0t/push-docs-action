@@ -55,6 +55,12 @@ runs:
         git commit -m "$REPO_SUBDIR" -a
         git push origin main
       shell: bash
+    - name: Build Docs
+      run: |
+          cd docs_repo
+          REPO_SUBDIR="docs/projects/${{ github.repository }}"
+          mkdocs gh-deploy --force -m "$SHORT_SHA" -f "$REPO_SUBDIR"
+      shell: bash
     - name: Push Tag
       run: |
         cd docs_repo
