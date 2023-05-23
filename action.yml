@@ -27,13 +27,13 @@ runs:
     - name: Create repo subdirectory
       run: |
         REPO_SUBDIR="projects/${{ github.repository }}"
-        mkdir -p "docs_repo/docs/$REPO_SUBDIR"
+        mkdir -p "docs_repo/docs/$REPO_SUBDIR/docs/"
       shell: bash
 
     - name: Move docs
       run: |
         REPO_SUBDIR="projects/${{ github.repository }}"
-        cp -r docs/* "docs_repo/docs/$REPO_SUBDIR/"
+        cp -r docs/* "docs_repo/docs/$REPO_SUBDIR/docs/"
         cp -r mkdocs.yml "docs_repo/docs/$REPO_SUBDIR/"
       shell: bash
 
