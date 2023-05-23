@@ -51,7 +51,7 @@ runs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add .
-        REPO_SUBDIR="projects/${{ github.repository }}/mkdocs.yml"
+        REPO_SUBDIR="docs/projects/${{ github.repository }}/mkdocs.yml"
         git commit -m "$REPO_SUBDIR" -a
         git push origin main
       shell: bash
