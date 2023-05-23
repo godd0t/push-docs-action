@@ -48,13 +48,10 @@ runs:
         cd docs_repo
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+        git tag docs-updated-${{ github.run_id }}
+        git push origin docs-updated-${{ github.run_id }}
         git add .
         REPO_SUBDIR="docs/projects/${{ github.repository }}/mkdocs.yml"
         git commit -m "$REPO_SUBDIR" -a
         git push origin main
-      shell: bash
-    - name: Push a tag
-      run: |
-        git tag docs-updated-${{ github.run_id }}
-        git push origin docs-updated-${{ github.run_id }}
       shell: bash
