@@ -69,7 +69,7 @@ runs:
     - name: Build Docs
       run: |
           cd docs_repo
-          REPO_SUBDIR="docs/projects/${{ github.repository }}"
+          REPO_SUBDIR="docs/projects/${{ github.repository }}/mkdocs.yml"
           mkdocs gh-deploy --force -m "$SHORT_SHA" -f "$REPO_SUBDIR"
       shell: bash
     - name: Push Tag
